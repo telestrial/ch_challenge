@@ -8,5 +8,24 @@
     "sequelize": "^6.12.0-alpha.1",
     "sqlite3": "^5.0.2",
     "uuid": "^8.3.2"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "capta_hydro",
+  "description": "",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/telestrial/ch_challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/telestrial/ch_challenge/issues"
+  },
+  "homepage": "https://github.com/telestrial/ch_challenge#readme"
 }
