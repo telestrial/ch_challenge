@@ -1,6 +1,6 @@
 // This is the seeder file to users.json. It creates a number of random users,
-// which can be set with the variable below. WARNING: Running this file will
-// rewrite users.json!
+// which can be set with the userCount variable below. WARNING: Running this file
+// will rewrite users.json!
 
 const fs = require('fs');
 const faker = require('faker');
