@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "faker": "^5.5.3",
     "path": "^0.12.7",
@@ -16,7 +18,6 @@
   "description": "",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/telestrial/ch_challenge.git"

@@ -1,10 +1,16 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+// catchAsync calls next() if async route fails
 const catchAsync = require('./utils/catchAsync');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('sqlite::memory:');
@@ -17,7 +23,7 @@ app.use(express.json());
 // app.use(express.static(path.resolve(__dirname, './client/public')));
 app.use(cors());
 
-// Checking db connection and creating a test user
+// Checking db connection and creating a test user. May be better in separate file.
 const tryDB = async () => {
   try {
     await sequelize.authenticate();
@@ -26,13 +32,19 @@ const tryDB = async () => {
     );
 
     // Setting up a user.
-    const test = await User.create({
-      email: 'test@gmail.com',
-      password: 'tester',
+    const firstUser = await User.create({
+      email: process.env.ROOT_EMAIL,
+      password: await bcrypt.hash(process.env.ROOT_PASSWORD, 10),
     });
-    console.log('Test user created.');
+
+    firstUser
+      ? console.log('Test user created.')
+      : console.log('Test user failed.');
   } catch (error) {
-    console.error('Unable to connect to the database:', error);
+    console.error(
+      'Unable to connect to the database or save test user:',
+      error
+    );
   }
 };
 
@@ -46,20 +58,21 @@ app.post(
 
     try {
       const foundUser = await User.findOne({ where: { email } });
-      if (foundUser && password === foundUser.password) {
+      const isAuthed = await bcrypt.compare(password, foundUser.password);
+      if (foundUser && isAuthed) {
         const sessionUUID = uuidv4();
         foundUser.uuid = sessionUUID;
         try {
           await foundUser.save();
-          res.send(JSON.stringify(sessionUUID));
+          res.status(200).send({ uuid: sessionUUID });
         } catch (error) {
           res.send(error);
         }
       } else {
-        res.send('There was a problem with login. Please try again.');
+        res.status(403).send({ error: 'Login failed. Please try again.' });
       }
     } catch (error) {
-      res.send(error);
+      res.status(403).send({ error: 'Login failed. Please try again.' });
     }
   })
 );
