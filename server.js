@@ -7,14 +7,16 @@ const app = express();
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-// catchAsync calls next() if async route fails
+// catchAsync simply calls next() if async route fails
 const catchAsync = require('./utils/catchAsync');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('sqlite::memory:');
 const { User } = require('./models/User');
+const e = require('express');
 
 // Express configuration
 const PORT = process.env.PORT || 3001;
@@ -50,6 +52,19 @@ const tryDB = async () => {
 
 tryDB();
 
+// Load our users.json into memory for use in the /users route and count it here
+// so it doesn't get reloaded or recounted at every request. If we wanted users.json
+// to be dynamic, we would do this much differently.
+let users = {};
+let usersCount;
+
+try {
+  users = JSON.parse(fs.readFileSync('./users.json', 'utf8'));
+  usersCount = users.length;
+} catch (error) {
+  console.log('WARNING: users.json cannot be found.');
+}
+
 // Routes
 app.post(
   '/login',
@@ -69,15 +84,18 @@ app.post(
           res.send(error);
         }
       } else {
-        res.status(403).send({ error: 'Login failed. Please try again.' });
+        res.status(401).send({ error: 'Login failed. Please try again.' });
       }
     } catch (error) {
-      res.status(403).send({ error: 'Login failed. Please try again.' });
+      res.status(401).send({ error: 'Login failed. Please try again.' });
     }
   })
 );
 
 app.get('/users', (req, res) => {
+  const limit = parseInt(req.query.limit);
+  const skip = parseInt(req.query.skip);
+  console.log(limit, skip, usersCount);
   res.sendFile(path.join(__dirname, '/users.json'));
 });
 
