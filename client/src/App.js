@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { createTheme, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import Login from './Login';
+import Users from './Users';
 
 import './App.css';
 
@@ -13,11 +15,20 @@ const theme = createTheme({
 });
 
 function App() {
+  const [showUsers, setShowUsers] = useState(false);
+
+  const showUsersHandler = (authStatus) => {
+    setShowUsers(authStatus);
+    console.log('App level hit!');
+  };
+
   return (
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Login />
+        {/* {!showUsers && <Login showUsers={showUsersHandler} />} */}
+        {/* {showUsers && 'YA'} */}
+        <Users />
       </ThemeProvider>
     </>
   );
