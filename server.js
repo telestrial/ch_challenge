@@ -19,10 +19,10 @@ const sequelize = new Sequelize('sqlite::memory:');
 const { User } = require('./models/User');
 
 // Express configuration
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(express.static(path.resolve(__dirname, './client/public')));
+app.use(express.static(path.resolve(__dirname, './client/build')));
 app.use(cors());
 
 // Checking db connection and creating a test user. May be better in separate file.
@@ -110,6 +110,10 @@ app.get('/users', (req, res) => {
       error: 'The request cannot be completed.',
     });
   }
+});
+
+app.get('*', (req, res) => {
+  res.send('index.html');
 });
 
 app.listen(PORT, () => {

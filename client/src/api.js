@@ -15,4 +15,4 @@ const checkLogin = async (email, password) => {
   }
 };
 
-module.exports.checkLogin = checkLogin;
+export default checkLogin;

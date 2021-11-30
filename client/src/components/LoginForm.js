@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { FormLabel, TextField, Button, Grid, Box } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { checkLogin } from '../api';
+import checkLogin from '../api';
 
 const LoginForm = ({ isAuthorized }) => {
   const emailRef = useRef(null);
