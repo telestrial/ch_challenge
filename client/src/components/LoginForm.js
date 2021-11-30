@@ -13,6 +13,10 @@ const LoginForm = ({ isAuthorized }) => {
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
+    // Reset input fields to normal on submit. Might be better outside of this function
+    // as an onBlur
+    setEmailValidity(true);
+    setPasswordValidity(true);
     // If user tries to submit either field blank, do not hit database and
     // instead let them know.
     if (emailRef.current.value === '' || passwordRef.current.value === '') {
@@ -24,6 +28,8 @@ const LoginForm = ({ isAuthorized }) => {
         passwordRef.current.value
       );
 
+      // If our response contains a uuid, it is a successful login. isAuthorized begins to
+      // lift state.
       if (login.uuid) {
         isAuthorized(true);
       } else {
