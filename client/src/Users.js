@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Box,
-  Container,
   Table,
   TableBody,
   TableCell,
@@ -11,6 +10,7 @@ import {
   TablePagination,
   TableRow,
   Paper,
+  CircularProgress,
 } from '@material-ui/core';
 
 const Users = () => {
@@ -21,13 +21,15 @@ const Users = () => {
 
   useEffect(() => {
     const getUsers = async (limit, currentPage) => {
-      await fetch(`/users?limit=${limit}&page=${currentPage}`)
-        .then((res) => res.json())
-        .then((res) => {
-          const { pages, users } = res.data;
-          setUserData(users);
-          setTotalPages(pages);
-        });
+      try {
+        await fetch(`/users?limit=${limit}&page=${currentPage}`)
+          .then((res) => res.json())
+          .then((res) => {
+            const { pages, users } = res.data;
+            setUserData(users);
+            setTotalPages(pages);
+          });
+      } catch (error) {}
     };
     getUsers(limit, currentPage);
   }, [limit, currentPage]);
@@ -48,60 +50,57 @@ const Users = () => {
   };
 
   return (
-    <Container fixed>
-      <Box display="flex" justifyContent="center">
-        <Box my="3rem" bgcolor="white" borderRadius="5px" p="1.5rem">
-          <h1>Users</h1>
-          <TableContainer component={Paper}>
-            <Table sx={{ overflow: 'auto' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="left">First Name</TableCell>
-                  <TableCell align="left">Last Name</TableCell>
-                  <TableCell align="left">Email</TableCell>
-                  <TableCell aling="left">Password</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {userData &&
-                  userData.map((user) => {
-                    return (
-                      <TableRow
-                        key={user.email}
-                        sx={{
-                          '&:last-child td, &:last-child th': { border: 0 },
-                        }}
-                      >
-                        <TableCell align="left">{user.firstName}</TableCell>
-                        <TableCell align="left">{user.lastName}</TableCell>
-                        <TableCell align="left">{user.email}</TableCell>
-                        <TableCell align="left">{user.password}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[
-                      10,
-                      25,
-                      50,
-                      { label: 'All', value: -1 },
-                    ]}
-                    count={limit * totalPages}
-                    rowsPerPage={limit}
-                    page={currentPage - 1}
-                    onPageChange={onPageChangeHandler}
-                    onRowsPerPageChange={onRowsPerPageChangeHandler}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </TableContainer>
-        </Box>
+    <Box display="flex" justifyContent="center">
+      <Box my="3rem" bgcolor="white" borderRadius="5px" p="1.5rem" width="90%">
+        <h1>Users</h1>
+        <TableContainer component={Paper}>
+          <Table
+            sx={{ display: 'block', width: '99%', overflowX: 'auto' }}
+            size="small"
+          >
+            <TableHead>
+              <TableRow>
+                <TableCell align="left">First Name</TableCell>
+                <TableCell align="left">Last Name</TableCell>
+                <TableCell align="left">Email</TableCell>
+                <TableCell aling="left">Password</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {!userData && <CircularProgress />}
+              {userData &&
+                userData.map((user) => {
+                  return (
+                    <TableRow
+                      key={user.email}
+                      sx={{
+                        '&:last-child td, &:last-child th': { border: 0 },
+                      }}
+                    >
+                      <TableCell align="left">{user.firstName}</TableCell>
+                      <TableCell align="left">{user.lastName}</TableCell>
+                      <TableCell align="left">{user.email}</TableCell>
+                      <TableCell align="left">{user.password}</TableCell>
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 50, { label: 'All', value: -1 }]}
+                  count={limit * totalPages}
+                  rowsPerPage={limit}
+                  page={currentPage - 1}
+                  onPageChange={onPageChangeHandler}
+                  onRowsPerPageChange={onRowsPerPageChangeHandler}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
       </Box>
-    </Container>
+    </Box>
   );
 };
 
