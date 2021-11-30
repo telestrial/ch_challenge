@@ -94,9 +94,13 @@ app.post(
 
 app.get('/users', (req, res) => {
   const limit = parseInt(req.query.limit);
-  const skip = parseInt(req.query.skip);
-  console.log(limit, skip, usersCount);
-  res.sendFile(path.join(__dirname, '/users.json'));
+  const page = parseInt(req.query.page);
+  res.status(200).send({
+    data: {
+      pages: Math.ceil(usersCount / limit),
+      users: users.slice(limit * page - limit, limit * page),
+    },
+  });
 });
 
 app.listen(PORT, () => {
