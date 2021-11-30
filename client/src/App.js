@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { createTheme, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
+
 import Login from './Login';
 import Users from './Users';
-
-import './App.css';
 
 const theme = createTheme({
   palette: {
