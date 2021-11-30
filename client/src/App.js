@@ -18,16 +18,14 @@ function App() {
 
   const showUsersHandler = (authStatus) => {
     setShowUsers(authStatus);
-    console.log('App level hit!');
   };
 
   return (
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {/* {!showUsers && <Login showUsers={showUsersHandler} />} */}
-        {/* {showUsers && 'YA'} */}
-        <Users />
+        {!showUsers && <Login showUsers={showUsersHandler} />}
+        {showUsers && <Users />}
       </ThemeProvider>
     </>
   );
