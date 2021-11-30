@@ -13,10 +13,10 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 
+// Sequelize
 const { Sequelize } = require('sequelize');
 const sequelize = new Sequelize('sqlite::memory:');
 const { User } = require('./models/User');
-const e = require('express');
 
 // Express configuration
 const PORT = process.env.PORT || 3001;
@@ -43,17 +43,14 @@ const tryDB = async () => {
       ? console.log('Test user created.')
       : console.log('Test user failed.');
   } catch (error) {
-    console.error(
-      'Unable to connect to the database or save test user:',
-      error
-    );
+    console.error('Database error:', error);
   }
 };
 
 tryDB();
 
 // Load our users.json into memory for use in the /users route and count it here
-// so it doesn't get reloaded or recounted at every request. If we wanted users.json
+// so it doesn't get reloaded or recounted at every request. If users.json was
 // to be dynamic, we would do this much differently.
 let users = {};
 let usersCount;
@@ -95,12 +92,24 @@ app.post(
 app.get('/users', (req, res) => {
   const limit = parseInt(req.query.limit);
   const page = parseInt(req.query.page);
-  res.status(200).send({
-    data: {
-      pages: Math.ceil(usersCount / limit),
-      users: users.slice(limit * page - limit, limit * page),
-    },
-  });
+
+  if (isNaN(limit) || isNaN(page)) {
+    res.status(400).send({
+      error:
+        'All queries must include limit and page, and they must be numbers.',
+    });
+  } else if (limit && page) {
+    res.status(200).send({
+      data: {
+        pages: Math.ceil(usersCount / limit),
+        users: users.slice(limit * page - limit, limit * page),
+      },
+    });
+  } else {
+    res.status(400).send({
+      error: 'The request cannot be completed.',
+    });
+  }
 });
 
 app.listen(PORT, () => {
