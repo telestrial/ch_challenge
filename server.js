@@ -110,10 +110,11 @@ app.get('/users', (req, res) => {
       error: 'The request cannot be completed.',
     });
   }
+  console.log('hello');
 });
 
 app.get('*', (req, res) => {
-  res.send('index.html');
+  res.sendFile(__dirname + '/client/build/index.html');
 });
 
 app.listen(PORT, () => {
